@@ -19,6 +19,7 @@ soup = bs(page.text, "html.parser")
 ultragrid = soup.findAll('table',{"class":"ultra_grid"})[0]
 #Create Headers
 head = ultragrid.find('tr')
+allurl = []
 headers = []
 for h in head.find_all('th'):
     if h.text == '':
@@ -38,6 +39,7 @@ for t in tr:
         if re.match('Results', f.text.strip()):
             for bs in f.find_all('a'):
                 runnerurl.append(bs['href'])
+                allurl.append(bs['href'])
                 runner.append(bs['href'])
         else:
             runner.append(f.text.strip())
@@ -56,4 +58,7 @@ data = data.drop(0)
 # for d in drops:
 #     data = data.drop(d,axis=1)
 #     # why does age rank look like two columns?
+with open("out.csv", "w", newline=",") as f:
+    writer = csv.writer(f)
+    writer.writerows(allurl)
 
