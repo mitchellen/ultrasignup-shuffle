@@ -10,12 +10,12 @@ class Runner:
       #age,number of races, url
       #self.array = array
       self.url = url
-      events = []
       self.first = array[0].split(' ')[0]
       self.last = array[0].split(' ')[1]
       self.age  = self.just_age(array[0].split(' ')[-1])
       self.total = array[1].split(' ')[0]
       self.sex = self.m_or_f(array[0].split(' ')[-1])
+      self.events = []
    def m_or_f(self, age):
        return (age[:1])
    def just_age(self, age):
@@ -40,7 +40,7 @@ class Race:
       elif len(array) < 4:
          self.endtime = array[2]
          self.distance = array[0].split('-')[-2].strip()
-         self.location  = array[0].split('-')[-1].strip()
+         self.location = array[0].split('-')[-1].strip()
          self.status = 'Complete'
          #self.weather = ?
          #pace = get_pace(endtime, dist)
@@ -49,7 +49,7 @@ class Race:
          self.dist = array[0].split('-')[-2].strip()
          self.endtime = array[3]
          self.age = array[4].split(': ')[1]
-         self.location  = array[0].split('-')[-1].strip()
+         self.location = array[0].split('-')[-1].strip()
          self.status = 'Complete'
          #self.weather = ?
         # pace = get_pace(endtime, dist)
@@ -108,6 +108,8 @@ with open('out.txt', mode ='r')as file:
 #            print(race)
             obj = Race(racelist)
             # add these to run.event.append(obj)
-            print(vars(obj)) # this is debug/crutch
+            run.events.append(vars(obj))
+            #print(vars(obj)) # this is debug/crutch
+         print(vars(run))
       browser.close()
       #find out why pace is fucked
