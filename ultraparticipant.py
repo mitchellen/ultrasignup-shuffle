@@ -36,14 +36,14 @@ class Race:
           else:
              self.distance = array[0].split('-')[-2].strip()
              self.status = 'Future'
-      # these are just odd cases
+             # these are just odd cases
       elif len(array) < 4:
          self.endtime = array[2]
          self.distance = array[0].split('-')[-2].strip()
          self.location = array[0].split('-')[-1].strip()
          self.status = 'Complete'
          #self.weather = ?
-         #pace = get_pace(endtime, dist)
+         self.pace = self.get_pace(self.endtime, self.distance)
       #most races completed go here
       else:
          self.dist = array[0].split('-')[-2].strip()
@@ -51,22 +51,17 @@ class Race:
          self.age = array[4].split(': ')[1]
          self.location = array[0].split('-')[-1].strip()
          self.status = 'Complete'
-         #self.weather = ?
-        # pace = get_pace(endtime, dist)
-
-
-
-#functions
-def to_miles(Km):
-   return round(Km * 0.621371, 2)
-def get_pace(dur, dis):
+         self.pace = self.get_pace(self.endtime, self.dist)
+   def to_miles(self, Km):
+      return round(Km * 0.621371, 2)
+   def get_pace(self, dur, dis):
     try:
        dis = dis.upper()
        if re.search(r'\d*:\d*.*$', dur):
           hours = int(dur.split(':')[0]) *60  + float((dur.split(':')[1]))
           if re.search(r'.*\d*K.*$', dis):
              found = re.search('\d*', dis)
-             p = to_miles(int(found.group()))
+             p = self.to_miles(int(found.group()))
              result = round(hours / p, 2)
           elif re.search(r'.*\d*.*MILER.*$', dis):
              found = re.search('\d*', dis)
@@ -80,6 +75,7 @@ def get_pace(dur, dis):
        return result
     except:
         return 'No Clue'
+
      # #URL
 with open('out.txt', mode ='r')as file:
    time.sleep(5)
@@ -95,6 +91,7 @@ with open('out.txt', mode ='r')as file:
       opts.add_argument('--headless')
       browser = Firefox(options=opts)
       browser.get(URL)
+      time.sleep(1)
       runners = []
       acchead = browser.find_elements_by_class_name('accordion-heading')
       accordion = browser.find_elements_by_class_name('accordion-content')
@@ -105,11 +102,9 @@ with open('out.txt', mode ='r')as file:
          print(run.url)
          for r in races:
             racelist = r.text.split('\n')
-#            print(race)
             obj = Race(racelist)
-            # add these to run.event.append(obj)
             run.events.append(vars(obj))
             #print(vars(obj)) # this is debug/crutch
          print(vars(run))
-      browser.close()
-      #find out why pace is fucked
+         browser.close()
+         #find out why pace is fucked
