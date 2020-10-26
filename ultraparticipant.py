@@ -13,7 +13,7 @@ class Runner:
       self.last = array[0].split(' ')[1]
       self.age  = self.just_age(array[0].split(' ')[-1])
       self.total = array[1].split(' ')[0]
-      self.divsion = self.m_or_f(array[0].split(' ')[-1])
+      self.division = self.m_or_f(array[0].split(' ')[-1])
       self.events = []
    def m_or_f(self, age):
        return (age[:1])
