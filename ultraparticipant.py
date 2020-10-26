@@ -8,13 +8,12 @@ class Runner:
     '''
    def __init__(self, array, url):
       #age,number of races, url
-      #self.array = array
       self.url = url
       self.first = array[0].split(' ')[0]
       self.last = array[0].split(' ')[1]
       self.age  = self.just_age(array[0].split(' ')[-1])
       self.total = array[1].split(' ')[0]
-      self.sex = self.m_or_f(array[0].split(' ')[-1])
+      self.divsion = self.m_or_f(array[0].split(' ')[-1])
       self.events = []
    def m_or_f(self, age):
        return (age[:1])
@@ -106,5 +105,5 @@ with open('out.txt', mode ='r')as file:
             run.events.append(vars(obj))
             #print(vars(obj)) # this is debug/crutch
          print(vars(run))
-         browser.close()
+      browser.close()
          #find out why pace is fucked
