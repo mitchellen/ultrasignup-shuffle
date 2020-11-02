@@ -57,18 +57,22 @@ class Race:
     try:
        dis = dis.upper()
        if re.search(r'\d*:\d*.*$', dur):
+          
           hours = int(dur.split(':')[0]) *60  + float((dur.split(':')[1]))
           if re.search(r'.*\d*K.*$', dis):
              found = re.search('\d*', dis)
              p = self.to_miles(int(found.group()))
-             result = round(hours / p, 2)
+             result = round(hours / p, 2) # second number for round if for places in decimal
           elif re.search(r'.*\d*.*MILER.*$', dis):
              found = re.search('\d*', dis)
              p = int(found.group())
-             
              result = round(hours / p, 2)
           elif re.search(r'^.*MARATHON.*$', dis):
              result = round(hours / 26.2, 2)
+          elif re.search(r'^.*HALF MARATHON.*$', dis):
+             result = round(hours / 13.1, 2)
+          #figure out the hr races too!
+         
        else:
           result = 'WTF'
        return result
