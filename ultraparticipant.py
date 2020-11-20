@@ -5,13 +5,13 @@ from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
 class Runner:
    '''Doc
-    '''
+   '''
    def __init__(self, array, url):
       #age,number of races, url
       self.url = url
       self.first = array[0].split(' ')[0]
       self.last = array[0].split(' ')[1]
-      self.age  = self.just_age(array[0].split(' ')[-1])
+      self.age = self.just_age(array[0].split(' ')[-1])
       self.total = array[1].split(' ')[0]
       self.division = self.m_or_f(array[0].split(' ')[-1])
       self.events = []
@@ -43,7 +43,7 @@ class Race:
          self.status = 'Complete'
          #self.weather = ?
          self.pace = self.get_pace(self.endtime, self.distance)
-      #most races completed go here
+      #most races completed go into else
       else:
          self.dist = array[0].split('-')[-2].strip()
          self.endtime = array[3]
@@ -74,7 +74,7 @@ class Race:
           #figure out the hr races too!
          
        else:
-          result = 'WTF'
+          result = 'No Clue'
        return result
     except:
         return 'No Clue'
@@ -110,4 +110,6 @@ with open('out.txt', mode ='r')as file:
             #print(vars(obj)) # this is debug/crutch
          print(vars(run))
       browser.close()
-         #find out why pace is fucked
+      # I need for pace to count the decimals and know when it is sub 1 hour
+      # Also need to make a plan for races that are hour instead of distance. The data is laid out different
+      # Need to match ages and make a guess is too simlar(guess is prob [0])
