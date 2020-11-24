@@ -123,15 +123,37 @@ for t in tr:
                 runner.append(bs['href'])
         else:
             runner.append(f.text.strip())
-            print(runner)
+    if len(runner) != 0:
+        # this is to get a number to compare with results found against all users with the name given
+        numofracesfromrace = runner[2]
     if len(runnerurl) != 0:
         # paste ultraparticipant here
-        rurl = (BASEURL + runnerurl[0])
-        runpage = requests.get(rurl)
-        rsoup = bs(runpage.text, "html.parser") #<= wtf, same prob with selenium or requests - blank array both ways
-        runners.append(runner)
-        #done with runners
-        #created dataframe
+        URL = (BASEURL + runnerurl[0])
+        opts = Options()
+        opts.add_argument('--headless')
+        browser = Firefox(options=opts)
+        browser.get(URL)
+        time.sleep(1)
+        runners = []
+        acchead = browser.find_elements_by_class_name('accordion-heading')
+        accordion = browser.find_elements_by_class_name('accordion-content')
+        for num, runner in enumerate(acchead, start=0):
+            runarray = runner.text.split('\n')
+            run = Runner(runarray, URL)
+            races = accordion[num].find_elements_by_class_name('rowlines')
+            print(run.url)
+            for r in races:
+                racelist = r.text.split('\n')
+                obj = Race(racelist)
+                run.events.append(vars(obj))
+                #print(vars(obj)) # this is debug/crutch
+            print(vars(run))
+        browser.close()
+         # runpage = requests.get(rurl)
+         # rsoup = bs(runpage.text, "html.parser") #<= wtf, same prob with selenium or requests - blank array both ways
+         # runners.append(runner)
+         #done with runners
+         #created dataframe
 data = pd.DataFrame(runners)
 data.columns = headers
 data = data.drop(0)
