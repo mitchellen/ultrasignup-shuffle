@@ -93,6 +93,13 @@ class Race:
 
 
 #url)
+def searchKeysByVal(dict, byVal):
+    keysList = []
+    itemsList = dict.items()
+    for item in itemsList:
+        if item[1] == byVal:
+            keysList.append(item[0])
+    return keysList
 BASEURL = 'https://ultrasignup.com'
 URL = 'https://ultrasignup.com/entrants_event.aspx?did=79789'
 #start scraping
@@ -147,6 +154,7 @@ for t in tr:
                 obj = Race(racelist)
                 run.events.append(vars(obj))
                 #print(vars(obj)) # this is debug/crutch
+            print(numofracesfromrace)
             print(vars(run))
         browser.close()
          # runpage = requests.get(rurl)
@@ -154,6 +162,8 @@ for t in tr:
          # runners.append(runner)
          #done with runners
          #created dataframe
-data = pd.DataFrame(runners)
-data.columns = headers
-data = data.drop(0)
+# data = pd.DataFrame(runners)
+# data.columns = headers
+# data = data.drop(0)
+
+#figure out how to convert total number of entries into a total number of past race
