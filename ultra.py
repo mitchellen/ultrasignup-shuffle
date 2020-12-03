@@ -17,17 +17,24 @@ class Runner:
     def __init__(self, array, url):
         
        #age,number of races, url
+      self.events = []
       self.url = url
       self.first = array[0].split(' ')[0]
       self.last = array[0].split(' ')[1]
       self.age = self.just_age(array[0].split(' ')[-1])
       self.total = array[1].split(' ')[0]
       self.division = self.m_or_f(array[0].split(' ')[-1])
-      self.events = []
     def m_or_f(self, age):
         return (age[:1])
     def just_age(self, age):
         return (age[1:])
+    def minus_future(self, events):
+        notlist = []
+        for e in events:
+            if e['status'] == 'Complete':
+                notlist.append(e)
+        return len(notlist)
+    
 
 class Race:
     '''Doc for Race
@@ -90,16 +97,6 @@ class Race:
         except:
             return 'No Clue'
 
-
-
-#url)
-def searchKeysByVal(dict, byVal):
-    keysList = []
-    itemsList = dict.items()
-    for item in itemsList:
-        if item[1] == byVal:
-            keysList.append(item[0])
-    return keysList
 BASEURL = 'https://ultrasignup.com'
 URL = 'https://ultrasignup.com/entrants_event.aspx?did=79789'
 #start scraping
@@ -132,6 +129,7 @@ for t in tr:
             runner.append(f.text.strip())
     if len(runner) != 0:
         # this is to get a number to compare with results found against all users with the name given
+        expectedfinish = runner[3]
         numofracesfromrace = runner[2]
     if len(runnerurl) != 0:
         # paste ultraparticipant here
@@ -141,7 +139,6 @@ for t in tr:
         browser = Firefox(options=opts)
         browser.get(URL)
         time.sleep(1)
-        runners = []
         acchead = browser.find_elements_by_class_name('accordion-heading')
         accordion = browser.find_elements_by_class_name('accordion-content')
         for num, runner in enumerate(acchead, start=0):
@@ -153,8 +150,15 @@ for t in tr:
                 racelist = r.text.split('\n')
                 obj = Race(racelist)
                 run.events.append(vars(obj))
-                #print(vars(obj)) # this is debug/crutch
+            complete = []
+            for e in run.events:
+                if e['status'] == 'Complete':
+                    complete.append(e)
             print(numofracesfromrace)
+            print(len(complete))
+            if len(complete) == int(numofracesfromrace):
+                print('Match!')
+                runners.append(run)
             print(vars(run))
         browser.close()
          # runpage = requests.get(rurl)
@@ -162,6 +166,26 @@ for t in tr:
          # runners.append(runner)
          #done with runners
          #created dataframe
+results = []
+for r in runners:
+    #do the work to make the proper table
+    rundict = {'predicted pace per mile of current race': '',
+               'current race distance in miles': '',
+               'current race trail or road': '',
+               'gender': r.division,
+               'age': r.age,
+               'races previously run': len(r.events),
+               'months since last race': '',
+               'last race distance in miles': '',
+               'difference in last race to current race': '',
+               'last race pace per mile': '',
+               #'last race elevation gain': '',
+               #'last race trail or road': '',
+               'ever run farther than distance of current race': '',
+               'ever run distance of current race': '',
+               #'temperature last race': '',
+    }
+    
 # data = pd.DataFrame(runners)
 # data.columns = headers
 # data = data.drop(0)
