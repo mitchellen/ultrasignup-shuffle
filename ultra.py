@@ -96,13 +96,15 @@ class Race:
                 return result
         except:
             return 'No Clue'
-
 BASEURL = 'https://ultrasignup.com'
+EVENTURL = 'https://ultrasignup.com/register.aspx?did=79789'
 URL = 'https://ultrasignup.com/entrants_event.aspx?did=79789'
 #start scraping
 page = requests.get(URL)
 soup = bs(page.text, "html.parser")
-ultragrid = soup.findAll('table',{"class":"ultra_grid"})[0]
+dist = soup.find('span',{'class': 'distances'})
+
+Ultragrid = soup.findAll('table',{"class":"ultra_grid"})[0]
 #Create Headers
 head = ultragrid.find('tr')
 headers = []
