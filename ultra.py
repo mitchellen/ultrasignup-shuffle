@@ -98,13 +98,16 @@ class Race:
             return 'No Clue'
 BASEURL = 'https://ultrasignup.com'
 EVENTURL = 'https://ultrasignup.com/register.aspx?did=79789'
-URL = 'https://ultrasignup.com/entrants_event.aspx?did=79789'
+#URL = 'https://ultrasignup.com/entrants_event.aspx?did=79789'
+URL = 'https://ultrasignup.com/entrants_event.aspx?did=80402'
 #start scraping
 page = requests.get(URL)
 soup = bs(page.text, "html.parser")
-dist = soup.find('span',{'class': 'distances'})
-
-Ultragrid = soup.findAll('table',{"class":"ultra_grid"})[0]
+racedist = soup.find('span',{'class': 'distances'})
+#sometimes there are multiple races per page
+if racedist.text.__contains__(","):
+    racedist = soup.find('a',{'class': 'event_selected_link'})
+ultragrid = soup.findAll('table',{"class":"ultra_grid"})[0]
 #Create Headers
 head = ultragrid.find('tr')
 headers = []
@@ -171,22 +174,23 @@ for t in tr:
 results = []
 for r in runners:
     #do the work to make the proper table
-    rundict = {'predicted pace per mile of current race': '',
-               'current race distance in miles': '',
-               'current race trail or road': '',
+    rundict = {'predicted pace per mile of current race': '',# use the fucntions in class?
+               'current race distance in miles': racedist.text,
+               'current race trail or road': '',# how to find this? scrape page and look for key phrases?
                'gender': r.division,
                'age': r.age,
                'races previously run': len(r.events),
-               'months since last race': '',
-               'last race distance in miles': '',
-               'difference in last race to current race': '',
-               'last race pace per mile': '',
+               'months since last race': '', #do some math?
+               'last race distance in miles': '',#do some math? ^^
+               'difference in last race to current race': '', #do some math?^^^^
+               'last race pace per mile': '',# make function work 
                #'last race elevation gain': '',
                #'last race trail or road': '',
-               'ever run farther than distance of current race': '',
-               'ever run distance of current race': '',
+               'ever run farther than distance of current race': '',# parse data and y/n
+               'ever run distance of current race': '',# parse data and y/n
                #'temperature last race': '',
     }
+    #add r to a new table with cleaned data! dust hands!!!
     
 # data = pd.DataFrame(runners)
 # data.columns = headers
