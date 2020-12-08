@@ -14,11 +14,12 @@ from selenium.webdriver.firefox.options import Options
 class Runner:
     '''Doc
     '''
-    def __init__(self, array, url):
+    def __init__(self, array, url, expected):
         
        #age,number of races, url
       self.events = []
       self.url = url
+      self.expectedfinish = expected
       self.first = array[0].split(' ')[0]
       self.last = array[0].split(' ')[1]
       self.age = self.just_age(array[0].split(' ')[-1])
@@ -148,7 +149,7 @@ for t in tr:
         accordion = browser.find_elements_by_class_name('accordion-content')
         for num, runner in enumerate(acchead, start=0):
             runarray = runner.text.split('\n')
-            run = Runner(runarray, URL)
+            run = Runner(runarray, URL, expectedfinish)
             races = accordion[num].find_elements_by_class_name('rowlines')
             print(run.url)
             for r in races:
@@ -174,16 +175,16 @@ for t in tr:
 results = []
 for r in runners:
     #do the work to make the proper table
-    rundict = {'predicted pace per mile of current race': '',# use the fucntions in class?
+    rundict = {'predicted pace per mile of current race': Race.get_pace('', r.expectedfinish, racedist.text),# use the fucntions in class?
                'current race distance in miles': racedist.text,
                'current race trail or road': '',# how to find this? scrape page and look for key phrases?
                'gender': r.division,
                'age': r.age,
                'races previously run': len(r.events),
-               'months since last race': '', #do some math?
+               'months since last race': '', #do some math? count futures
                'last race distance in miles': '',#do some math? ^^
                'difference in last race to current race': '', #do some math?^^^^
-               'last race pace per mile': '',# make function work 
+               'last race pace per mile': '',# make function work, last non-future
                #'last race elevation gain': '',
                #'last race trail or road': '',
                'ever run farther than distance of current race': '',# parse data and y/n
