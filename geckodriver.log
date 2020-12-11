@@ -6855,3 +6855,27 @@ console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Err
 1607390919797	Marionette	WARN	TLS certificate errors will be ignored for this session
 1607390924138	Marionette	INFO	Stopped listening on port 33611
 Exiting due to channel error.
+1607528519988	geckodriver	INFO	Listening on 127.0.0.1:49011
+1607528521023	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofiletsRdDa"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1607528524084	Marionette	INFO	Listening on port 42045
+1607528524140	Marionette	WARN	TLS certificate errors will be ignored for this session
+1607528530430	Marionette	INFO	Stopped listening on port 42045
+1607528723836	geckodriver	INFO	Listening on 127.0.0.1:57001
+1607528724865	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileheLSg3"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1607528728044	Marionette	INFO	Listening on port 45881
+1607528728082	Marionette	WARN	TLS certificate errors will be ignored for this session
+1607528731608	Marionette	INFO	Stopped listening on port 45881
+Exiting due to channel error.
+1607648837361	geckodriver	INFO	Listening on 127.0.0.1:55835
+1607648837371	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileSwwc1V"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1607648843006	Marionette	INFO	Listening on port 42841
+1607648843079	Marionette	WARN	TLS certificate errors will be ignored for this session
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.

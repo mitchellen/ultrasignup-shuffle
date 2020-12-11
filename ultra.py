@@ -174,6 +174,11 @@ for t in tr:
          #created dataframe
 results = []
 for r in runners:
+    completed = []
+    for e in r.events:
+        if e['status'] == 'Complete':
+            completed.append(e)
+    
     #do the work to make the proper table
     rundict = {'predicted pace per mile of current race': Race.get_pace('', r.expectedfinish, racedist.text),# use the fucntions in class?
                'current race distance in miles': racedist.text,
