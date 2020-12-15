@@ -29,12 +29,9 @@ class Runner:
         return (age[:1])
     def just_age(self, age):
         return (age[1:])
-    def minus_future(self, events):
-        notlist = []
-        for e in events:
-            if e['status'] == 'Complete':
-                notlist.append(e)
-        return len(notlist)
+    def to_dict(self):
+        return {'first': self.first, 'last': self.last, 'expectedfinish': self.expectedfinish, 'age': self.age, 'TotalNumofRaces': self.total, 'Gender': self.division}
+
     
 
 class Race:
@@ -42,7 +39,6 @@ class Race:
     '''
     def __init__(self, array):
         self.name = array[0].split('-')[0].strip()
-        self.distance = array[0].split('-')[1].strip()
         self.date = array[1].strip()
         #these are DNF/DNS and Future races
         if len(array) <= 2:
@@ -64,12 +60,18 @@ class Race:
             self.pace = self.get_pace(self.endtime, self.distance)
          #most races completed go into else
         else:
-            self.dist = array[0].split('-')[-2].strip()
-            self.endtime = array[3]
-            self.age = array[4].split(': ')[1]
-            self.location = array[0].split('-')[-1].strip()
-            self.status = 'Complete'
-            self.pace = self.get_pace(self.endtime, self.dist)
+            if array[0].split('-')[-1].strip() == 'No Rank Finish':
+                self.distance = array[0].split('-')[1].strip()
+                self.endtime = array[3]
+                self.location = array[0].split('-')[-1].strip()
+                self.status = 'Complete'
+            else:
+                self.distance = array[0].split('-')[1].strip()
+                self.endtime = array[3]
+                self.age = array[4].split(': ')[1]
+                self.location = array[0].split('-')[-1].strip()
+                self.status = 'Complete'
+                self.pace = self.get_pace(self.endtime, self.distance)
     def to_miles(self, Km):
       return round(Km * 0.621371, 2)
     def get_pace(self, dur, dis):
@@ -112,6 +114,7 @@ ultragrid = soup.findAll('table',{"class":"ultra_grid"})[0]
 #Create Headers
 head = ultragrid.find('tr')
 headers = []
+df  = pd.DataFrame()
 for h in head.find_all('th'):
     if h.text == '':
         headers.append('/')
@@ -154,6 +157,7 @@ for t in tr:
             print(run.url)
             for r in races:
                 racelist = r.text.split('\n')
+                print(racelist)
                 obj = Race(racelist)
                 run.events.append(vars(obj))
             complete = []
@@ -164,6 +168,7 @@ for t in tr:
             print(len(complete))
             if len(complete) == int(numofracesfromrace):
                 print('Match!')
+                df.append(run.to_dict(), ignore_index=True)
                 runners.append(run)
             print(vars(run))
         browser.close()
@@ -193,7 +198,7 @@ for r in runners:
                #'last race elevation gain': '',
                #'last race trail or road': '',
                'ever run farther than distance of current race': '',# parse data and y/n
-               'ever run distance of current race': '',# parse data and y/n
+               'ever run distance of current race': bool([ele for ele in run.events if(ele['distance'] in racedist)]),# parse data and y/n
                #'temperature last race': '',
     }
     #add r to a new table with cleaned data! dust hands!!!
@@ -203,3 +208,4 @@ for r in runners:
 # data = data.drop(0)
 
 #figure out how to convert total number of entries into a total number of past race
+#[ele for ele in run.events if(ele['dist'] in racedist)]
