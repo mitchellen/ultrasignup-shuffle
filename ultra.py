@@ -35,10 +35,32 @@ class Runner:
             return (age[1:])
         else:
             return ''
-    def to_dict(self):
-        return {'first': self.first, 'last': self.last, 'expectedfinish': self.expectedfinish, 'age': self.age, 'TotalNumofRaces': self.total, 'Gender': self.division}
+    def to_dict(self, current):
+        complete_races = []
+        for i in self.events:
+            if i['status'] == 'Complete':
+                complete_races.append(i)
+        lastrace = complete_races[0]
+        return {'first': self.first, 'last': self.last, 'expectedfinish': self.expectedfinish, 'age': self.age, 'races previously run': self.total, 'Gender': self.division,
+                'current race distance in miles': current, 'months since last race': lastracemath(self.events), 'last race distance in miles': lastracedistance,
+                'difference in last race to current race': distancediff(), 'last race pace per mile': lastracepacepermile,
+                 'ever run farther than distance of current race': '','ever run distance of current race': bool([ele for ele in self.events if(ele['distance'] in racedist)])} #test this
 
-    
+#                'current race distance in miles': racedist.text,
+#                'current race trail or road': '',# how to find this? scrape page and look for key phrases?
+#                !'gender': r.division,
+#                !'age': r.age,
+#                !'races previously run': len(r.events),
+#                'months since last race': '', #do some math? count futures
+#                'last race distance in miles': '',#do some math? ^^
+#                'difference in last race to current race': '', #do some math?^^^^
+#                'last race pace per mile': '',# make function work, last non-future
+#                #'last race elevation gain': '',
+#                #'last race trail or road': '',
+#                'ever run farther than distance of current race': '',# parse data and y/n
+#                'ever run distance of current race': bool([ele for ele in run.events if(ele['distance'] in racedist)]),# parse data and y/n
+#                #'temperature last race': '',
+#     }
 
 class Race:
     '''Doc for Race
@@ -113,22 +135,12 @@ URL = 'https://ultrasignup.com/entrants_event.aspx?did=80402'
 page = requests.get(URL)
 soup = bs(page.text, "html.parser")
 racedist = soup.find('span',{'class': 'distances'})
+nameofthisrace = soup.find('h1',{'class': 'event-title'})
 #sometimes there are multiple races per page
 if racedist.text.__contains__(","):
     racedist = soup.find('a',{'class': 'event_selected_link'})
 ultragrid = soup.findAll('table',{"class":"ultra_grid"})[0]
-#Create Headers
-head = ultragrid.find('tr')
-headers = []
-df  = pd.DataFrame()
-for h in head.find_all('th'):
-    if h.text == '':
-        headers.append('/')
-    else:
-        headers.append(h.text.strip())
-        headers[-1] = 'Link'
-        #Done With Headers
-        #Create Runner Rows
+
 runners = []
 tr = ultragrid.find_all('tr')
 for t in tr:
@@ -146,6 +158,7 @@ for t in tr:
         # this is to get a number to compare with results found against all users with the name given
         expectedfinish = runner[3]
         numofracesfromrace = runner[2]
+        agerange = runner[4]
     if len(runnerurl) != 0:
         # paste ultraparticipant here
         URL = (BASEURL + runnerurl[0])
@@ -170,28 +183,24 @@ for t in tr:
             for e in run.events:
                 if e['status'] == 'Complete':
                     complete.append(e)
-            print(type(numofracesfromrace))#wtf this???!!!
-            print(len(complete))
-            if numofracesfromrace == '':
-                numofracesfromrace = 0
-            if len(complete) == int(numofracesfromrace):
-                print('Match!')
-                runtodict = run.to_dict()
-                #df.append(run.to_dict(), ignore_index=True)
-                runners.append(runtodict)
-                print(vars(run))
+            #print(numofracesfromrace)#wtf this???!!!
+            #print(len(complete))
+            for ele in run.events:
+                if(ele['name'] in nameofthisrace) and ele['status'] == 'Future': # this makes sure the user is signed up in the future
+                    print('event name if working')
+                    if numofracesfromrace == '':
+                        numofracesfromrace = 0
+                    if len(complete) == int(numofracesfromrace): #Sometimes this is wrong. It is the number that is stored in ultrasignup though not counted
+                        print('Match!')
+                        runtodict = run.to_dict()
+                        runners.append(runtodict)
+                        print(vars(run))
+                    elif len(complete) > 5 and len(complete) == int(numofracesfromrace) - 1: # this is to catch discrepancies, maybe contested results that no longer posted
+                        print('Match! in elif')
+                        runtodict = run.to_dict()
+                        runners.append(runtodict)
+                        print(vars(run))
         browser.close()
-         # runpage = requests.get(rurl)
-         # rsoup = bs(runpage.text, "html.parser") #<= wtf, same prob with selenium or requests - blank array both ways
-         # runners.append(runner)
-         #done with runners
-         #created dataframe
-# results = []
-# for r in runners:
-#     completed = []
-#     for e in r.events:
-#         if e['status'] == 'Complete':
-#             completed.append(e)
     
 #     #do the work to make the proper table
 #     rundict = {'predicted pace per mile of current race': Race.get_pace('', r.expectedfinish, racedist.text),# use the fucntions in class?
@@ -212,9 +221,3 @@ for t in tr:
 #     }
     #add r to a new table with cleaned data! dust hands!!!
     
-data = pd.DataFrame(runners)
-# data.columns = headers
-# data = data.drop(0)
-
-#figure out how to convert total number of entries into a total number of past race
-#[ele for ele in run.events if(ele['dist'] in racedist)]
