@@ -10,6 +10,11 @@ import csv
 import time
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
+# PD options
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_colwidth', None)
 #classes
 class Runner:
     '''Doc
@@ -35,16 +40,45 @@ class Runner:
             return (age[1:])
         else:
             return ''
+    def real_total(self):
+        fin = []
+        for r in self.events:
+            if r['status'] == 'Complete':
+                fin.append(r)
+        return len(fin)
     def to_dict(self, current):
+        return {'first': self.first, 'last': self.last, 'expectedfinish': self.expectedfinish, 'age': self.age, 'races previously run': self.real_total(), 'Gender': self.division,
+                'current race distance in miles': current.text, 'months since last race': '', 'last race distance in miles': self.lastmiles(),
+                'difference in last race to current race': '', 'last race pace per mile': 'lastracepacepermile',
+                 'ever run farther than distance of current race': '','ever run distance of current race': bool([ele for ele in self.events if(ele['distance'] in racedist) and ele['status'] != 'Future'])} 
+    def to_miles(self, Km):
+      return round(Km * 0.621371, 2)
+    def lastrace(self):
         complete_races = []
         for i in self.events:
             if i['status'] == 'Complete':
                 complete_races.append(i)
-        lastrace = complete_races[0]
-        return {'first': self.first, 'last': self.last, 'expectedfinish': self.expectedfinish, 'age': self.age, 'races previously run': self.total, 'Gender': self.division,
-                'current race distance in miles': current, 'months since last race': lastracemath(self.events), 'last race distance in miles': lastracedistance,
-                'difference in last race to current race': distancediff(), 'last race pace per mile': lastracepacepermile,
-                 'ever run farther than distance of current race': '','ever run distance of current race': bool([ele for ele in self.events if(ele['distance'] in racedist)])} #test this
+        return complete_races[0]
+    def lastmiles(self):
+        try:
+            complete_races = []
+            for i in self.events:
+                if i['status'] == 'Complete':
+                    complete_races.append(i)
+                lastrace = complete_races[0]['distance']
+            print(f"!!{lastrace}")
+            if re.search(r'.*\d*K.*$', lastrace):
+                digits = [int(s) for s in re.findall(r'-?\d+\.?\d*', lastrace)][0]
+                lasymiles = self.to_miles(digits)
+                return lasymiles ### was a typo, now new variable name
+            elif re.search(r'.*\d*.*MILER.*$', lastrace):
+                lasymiles =  [int(s) for s in re.findall(r'-?\d+\.?\d*', lastrace)][0]
+                return lasymiles
+            else:
+                return None
+        except:
+            return None
+            
 
 #                'current race distance in miles': racedist.text,
 #                'current race trail or road': '',# how to find this? scrape page and look for key phrases?
@@ -187,20 +221,21 @@ for t in tr:
             #print(len(complete))
             for ele in run.events:
                 if(ele['name'] in nameofthisrace) and ele['status'] == 'Future': # this makes sure the user is signed up in the future
-                    print('event name if working')
                     if numofracesfromrace == '':
                         numofracesfromrace = 0
                     if len(complete) == int(numofracesfromrace): #Sometimes this is wrong. It is the number that is stored in ultrasignup though not counted
                         print('Match!')
-                        runtodict = run.to_dict()
+                        runtodict = run.to_dict(racedist)
                         runners.append(runtodict)
                         print(vars(run))
                     elif len(complete) > 5 and len(complete) == int(numofracesfromrace) - 1: # this is to catch discrepancies, maybe contested results that no longer posted
                         print('Match! in elif')
-                        runtodict = run.to_dict()
+                        runtodict = run.to_dict(racedist)
                         runners.append(runtodict)
                         print(vars(run))
         browser.close()
+        frame = pd.DataFrame(runners)
+        
     
 #     #do the work to make the proper table
 #     rundict = {'predicted pace per mile of current race': Race.get_pace('', r.expectedfinish, racedist.text),# use the fucntions in class?
@@ -219,5 +254,4 @@ for t in tr:
 #                'ever run distance of current race': bool([ele for ele in run.events if(ele['distance'] in racedist)]),# parse data and y/n
 #                #'temperature last race': '',
 #     }
-    #add r to a new table with cleaned data! dust hands!!!
-    
+    #add r to a new table with cleaned data! dust hands!!!    
