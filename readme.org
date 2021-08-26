@@ -1,0 +1,8 @@
+* UltraSignup Shuffle
+** Summary 
+Trying to create models to better guess the ranking for future races. 
+** TODOs
+  - [] Create a function to scrape previous editons of the race. Make sure to job past racer data at the event date to keep from skewing the data. Use that data to train a model.
+  - [ ] Randomize strings into integers
+  - [ ] Make sure all conversion functions are correct
+  - [ ] Run a test on a future race
